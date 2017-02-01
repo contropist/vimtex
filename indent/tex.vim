@@ -15,6 +15,7 @@ if !g:vimtex_indent_enabled | finish | endif
 call vimtex#util#set_default('g:vimtex_indent_ignored_envs', [
       \ 'document',
       \])
+call vimtex#util#set_default('g:vimtex_indent_delims_type', 'simple')
 
 let s:cpo_save = &cpoptions
 set cpoptions&vim
@@ -56,7 +57,8 @@ function! VimtexIndent(lnum) " {{{1
   " Indent environments, delimiters, and tikz
   let l:ind = indent(l:prev_lnum)
   let l:ind += s:indent_envs(l:line, l:prev_line)
-  let l:ind += s:indent_delims(l:line, a:lnum, l:prev_line, l:prev_lnum)
+  let l:ind += s:indent_delims_{g:vimtex_indent_delims_type}(
+        \ l:line, a:lnum, l:prev_line, l:prev_lnum)
   let l:ind += s:indent_tikz(l:prev_lnum, l:prev_line)
   return l:ind
 endfunction
@@ -110,7 +112,17 @@ let s:envs_begitem = s:envs_item . '\|' . s:envs_beglist
 let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 
 " }}}1
-function! s:indent_delims(line, lnum, prev_line, prev_lnum) " {{{1
+function! s:indent_delims_simple(line, lnum, prev_line, prev_lnum) " {{{1
+  if empty(s:re_delims) | return 0 | endif
+
+  return &sw*(  max([  s:count(a:prev_line, s:re_delims[4])
+        \            - s:count(a:prev_line, s:re_delims[5]), 0])
+        \     - max([  s:count(a:line, s:re_delims[5])
+        \            - s:count(a:line, s:re_delims[4]), 0]))
+endfunction
+
+" }}}1
+function! s:indent_delims_complex(line, lnum, prev_line, prev_lnum) " {{{1
   if empty(s:re_delims) | return 0 | endif
 
   let l:pre = s:split(a:prev_line, a:prev_lnum)
@@ -132,6 +144,8 @@ endfunction
 "   s:re_delims[1]  == math close
 "   s:re_delims[2]  == text open
 "   s:re_delims[3]  == text close
+"   s:re_delims[4]  == math open only with modifier
+"   s:re_delims[5]  == math close only with modifier
 "
 let s:re_delims = vimtex#delim#get_delim_regexes()
 

@@ -158,6 +158,19 @@ function! vimtex#delim#init_script() " {{{1
         \   . '\)\|\\\%(left\|right\)\s*\.',
         \}
 
+  let s:re.delim_mathmod = {
+        \ 'open' : '\%(\%(' . s:re.delim_mods.open . '\)\s*\)\%('
+        \   . join(map(copy(s:delims.delim_math.re), 'v:val[0]'), '\|')
+        \   . '\)\|\\left\s*\.',
+        \ 'close' : '\%(\%(' . s:re.delim_mods.close . '\)\s*\)\%('
+        \   . join(map(copy(s:delims.delim_math.re), 'v:val[1]'), '\|')
+        \   . '\)\|\\right\s*\.',
+        \ 'both' : '\%(\%(' . s:re.delim_mods.both . '\)\s*\)\%('
+        \   . join(map(copy(s:delims.delim_math.re), 'v:val[0]'), '\|') . '\|'
+        \   . join(map(copy(s:delims.delim_math.re), 'v:val[1]'), '\|')
+        \   . '\)\|\\\%(left\|right\)\s*\.',
+        \}
+
   let s:delims.env_all = {}
   let s:delims.delim_all = {}
   let s:delims.all = {}
@@ -216,7 +229,8 @@ endfunction
 function! vimtex#delim#get_delim_regexes(...) " {{{1
   return exists('s:re')
         \ ? [s:re.delim_math.open, s:re.delim_math.close,
-        \    s:re.delim_tex.open,  s:re.delim_tex.close]
+        \    s:re.delim_tex.open,  s:re.delim_tex.close,
+        \    s:re.delim_mathmod.open, s:re.delim_mathmod.close]
         \ : []
 endfunction
 
