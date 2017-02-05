@@ -115,11 +115,42 @@ let s:envs_enditem = s:envs_item . '\|' . s:envs_endlist
 function! s:indent_delims_simple(line, lnum, prev_line, prev_lnum) " {{{1
   if empty(s:re_delims) | return 0 | endif
 
-  return &sw*(  max([  s:count(a:prev_line, s:re_delims[4])
-        \            - s:count(a:prev_line, s:re_delims[5]), 0])
-        \     - max([  s:count(a:line, s:re_delims[5])
-        \            - s:count(a:line, s:re_delims[4]), 0]))
+  return &sw*(  max([  s:count(a:prev_line, s:re_open)
+        \            - s:count(a:prev_line, s:re_close), 0])
+        \     - max([  s:count(a:line, s:re_close)
+        \            - s:count(a:line, s:re_open), 0]))
 endfunction
+
+let s:delims_open = [
+      \ '\(',
+      \ '\[',
+      \ '\\\{',
+      \ '\\langle',
+      \ '\\lvert',
+      \ '\\lfloor',
+      \ '\\lceil',
+      \ '\\ulcorner',
+      \]
+let s:delims_close = [
+      \ '\)',
+      \ '\]',
+      \ '\\\}',
+      \ '\\rangle',
+      \ '\\rvert',
+      \ '\\rfloor',
+      \ '\\rceil',
+      \ '\\urcorner',
+      \]
+let s:re_open = '\v'
+      \ . '%(\\left|\\[bB]igg?l?)\s*%(' . join(s:delims_open, '|') . ')'
+      \ . '|\\left\s*\.'
+      \ . '|\{'
+      \ . '|\\\['
+let s:re_close = '\v'
+      \ . '%(\\right|\\[bB]igg?r?)\s*%(' . join(s:delims_close, '|') . ')'
+      \ . '|\\right\s*\.'
+      \ . '|\}'
+      \ . '|\\\]'
 
 " }}}1
 function! s:indent_delims_complex(line, lnum, prev_line, prev_lnum) " {{{1
