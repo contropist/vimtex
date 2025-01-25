@@ -168,7 +168,8 @@ function! s:init_default_mappings() abort " {{{1
   call s:map(0, 'n', 'cs$', '<plug>(vimtex-env-change-math)')
   call s:map(0, 'n', 'dse', '<plug>(vimtex-env-delete)')
   call s:map(0, 'n', 'cse', '<plug>(vimtex-env-change)')
-  call s:map(0, 'n', 'tse', '<plug>(vimtex-env-toggle-star)')
+  call s:map(0, 'n', 'tse', '<plug>(vimtex-env-toggle)')
+  call s:map(0, 'n', 'tss', '<plug>(vimtex-env-toggle-star)')
   call s:map(0, 'n', 'ts$', '<plug>(vimtex-env-toggle-math)')
   call s:map(0, 'n', '<F6>', '<plug>(vimtex-env-surround-line)')
   call s:map(0, 'x', '<F6>', '<plug>(vimtex-env-surround-visual)')
@@ -178,6 +179,7 @@ function! s:init_default_mappings() abort " {{{1
   call s:map(0, 'n', 'tsc',  '<plug>(vimtex-cmd-toggle-star)')
   call s:map(0, 'n', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
   call s:map(0, 'x', 'tsf',  '<plug>(vimtex-cmd-toggle-frac)')
+  call s:map(0, 'n', 'tsb',  '<plug>(vimtex-cmd-toggle-break)')
   call s:map(0, 'i', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map(0, 'n', '<F7>', '<plug>(vimtex-cmd-create)')
   call s:map(0, 'x', '<F7>', '<plug>(vimtex-cmd-create)')
@@ -364,9 +366,11 @@ function! s:filename_changed_post() abort " {{{1
 
     if has_key(b:vimtex, 'compiler')
       if b:vimtex.compiler.is_running()
-        call vimtex#log#warning('Compilation stopped!')
         call vimtex#compiler#stop()
+        call vimtex#log#warning('Compilation stopped!')
       endif
+
+      call vimtex#compiler#init_state(b:vimtex)
     endif
   endif
 endfunction
