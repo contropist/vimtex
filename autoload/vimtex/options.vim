@@ -74,6 +74,10 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_echo_verbose_input', 1)
 
   call s:init_option('vimtex_env_change_autofill', 0)
+  call s:init_option('vimtex_env_toggle_map', {
+        \ 'itemize': 'enumerate',
+        \ 'enumerate': 'itemize',
+        \})
   call s:init_option('vimtex_env_toggle_math_map', {
         \ '$': '\[',
         \ '\[': 'equation',
@@ -95,6 +99,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_fold_types_defaults', {
         \ 'preamble' : {},
         \ 'items' : {},
+        \ 'comment_pkg' : {},
         \ 'comments' : { 'enabled' : 0 },
         \ 'envs' : {
         \   'blacklist' : [],
@@ -311,7 +316,9 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_lint_chktex_ignore_warnings',
         \ '-n1 -n3 -n8 -n25 -n36')
 
-  call s:init_option('vimtex_parser_bib_backend', 'bibtex')
+  call s:init_option('vimtex_parser_bib_backend',
+        \ has('nvim') ? 'lua' : 'bibtex'
+        \)
   call s:init_option('vimtex_parser_cmd_separator_check',
         \ 'vimtex#cmd#parser_separator_check')
 
@@ -389,6 +396,15 @@ function! vimtex#options#init() abort " {{{1
         \ 'babel': {'conceal': 1},
         \ 'hyperref': {'conceal': 1},
         \ 'fontawesome5': {'conceal': 1},
+        \ 'robust_externalize': {
+        \   'presets': [
+        \     ['bash', 'bash'],
+        \     ['python', 'python'],
+        \     ['gnuplot', 'gnuplot'],
+        \     ['tikz', '@texClusterTikz'],
+        \     ['latex', 'TOP'],
+        \   ],
+        \ },
         \})
 
   " Disable conceals if chosen
@@ -461,7 +477,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_view_enabled', 1)
   call s:init_option('vimtex_view_automatic', 1)
   call s:init_option('vimtex_view_method', 'general')
-  call s:init_option('vimtex_view_use_temp_files', 0)
+  call s:init_option('vimtex_view_use_temp_files', v:false)
   call s:init_option('vimtex_view_forward_search_on_start', 1)
   call s:init_option('vimtex_view_reverse_search_edit_cmd', 'edit')
 
@@ -499,6 +515,7 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_view_texshop_sync', 0)
   call s:init_option('vimtex_view_zathura_options', '')
   call s:init_option('vimtex_view_zathura_check_libsynctex', 1)
+  call s:init_option('vimtex_view_zathura_use_synctex', 1)
 
   " Fallback option
   if g:vimtex_context_pdf_viewer ==# 'NONE'
